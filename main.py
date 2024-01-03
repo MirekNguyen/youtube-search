@@ -33,3 +33,7 @@ response = requests.get(BASE_VIDEO_URL, params=params, timeout=5)
 if response.status_code != 200:
     print("Error: ", response.status_code)
     sys.exit(1)
+
+search_results = response.json()
+video_ids = [video["id"]["videoId"] for video in search_results.get("items", [])]
+print(video_ids)
