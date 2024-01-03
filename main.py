@@ -1,14 +1,19 @@
 """Youtube Search"""
+import argparse
 import os
 import sys
 
-import argparse
 import requests
 from dotenv import load_dotenv
 
+import search_videos
+from search_videos import search_videos
+
 parser = argparse.ArgumentParser(description="Youtube Search")
 parser.add_argument("-c", "--channel", action="store", help="Channel ID (required)")
-parser.add_argument("-r", "--results", action="store", help="Number of results", default=1)
+parser.add_argument(
+    "-r", "--results", action="store", help="Number of results", default=1
+)
 
 args = parser.parse_args()
 
@@ -18,23 +23,10 @@ if not args.channel:
 
 load_dotenv()
 api_key = os.getenv("YOUTUBE_DATA_API_KEY")
-channel_id = args.channel
-BASE_VIDEO_URL = "https://www.googleapis.com/youtube/v3/search?"
-
-params = {
-    "part": "snippet",
-    "channelId": channel_id,
-    "maxResults": args.results,
-    "order": "date",
-    "type": "video",
-    "key": api_key,
-}
-response = requests.get(BASE_VIDEO_URL, params=params, timeout=5)
-if response.status_code != 200:
-    print("Error: ", response.status_code)
+search_results = search_videos(args.channel, api_key, args.results)
+if search_results.get("error"):
+    print(search_results["error"]["message"])
     sys.exit(1)
-
-search_results = response.json()
 
 video_ids = [video["id"]["videoId"] for video in search_results.get("items", [])]
 VIDEO_DETAILS_URL = "https://www.googleapis.com/youtube/v3/videos?"
