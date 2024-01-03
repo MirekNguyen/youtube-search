@@ -3,11 +3,11 @@ import argparse
 import os
 import sys
 
-import requests
 from dotenv import load_dotenv
 
 import search_videos
 from search_videos import search_videos
+from video_details import video_details, print_video_details
 
 parser = argparse.ArgumentParser(description="Youtube Search")
 parser.add_argument("-c", "--channel", action="store", help="Channel ID (required)")
@@ -29,15 +29,8 @@ if search_results.get("error"):
     sys.exit(1)
 
 video_ids = [video["id"]["videoId"] for video in search_results.get("items", [])]
-VIDEO_DETAILS_URL = "https://www.googleapis.com/youtube/v3/videos?"
-video_params = {
-    "part": "snippet,contentDetails",
-    "id": ",".join(video_ids),
-    "key": api_key,
-}
-video_response = requests.get(VIDEO_DETAILS_URL, params=video_params, timeout=5)
-videos = video_response.json()
-for video in videos.get("items", []):
-    title = video["snippet"]["title"]
-    duration = video["contentDetails"]["duration"]
-    print(f"{title} - {duration}")
+videos = video_details(video_ids, api_key)
+if videos.get("error"):
+    print(search_results["error"]["message"])
+    sys.exit(1)
+print_video_details(videos)
