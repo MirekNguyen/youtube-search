@@ -6,14 +6,17 @@ import sys
 from dotenv import load_dotenv
 
 import search_videos
+from feed_generator import generate_fg, generate_video_rss
 from search_videos import search_videos
-from video_details import video_details, print_video_details
+from video_details import video_details, video_info
 
 parser = argparse.ArgumentParser(description="Youtube Search")
 parser.add_argument("-c", "--channel", action="store", help="Channel ID (required)")
 parser.add_argument(
     "-r", "--results", action="store", help="Number of results", default=1
 )
+parser.add_argument("-o", "--output", action="store", help="Generate RSS feed")
+parser.add_argument("-t", "--timezone", action="store", help="Timezone")
 
 args = parser.parse_args()
 
@@ -33,4 +36,17 @@ videos = video_details(video_ids, api_key)
 if videos.get("error"):
     print(search_results["error"]["message"])
     sys.exit(1)
-print_video_details(videos)
+
+videos = video_info(videos)
+
+if args.output:
+    fg = generate_fg(
+        feed_id="https://www.youtube.com/channel/" + args.channel,
+        title="Youtube Search",
+        subtitle="Youtube Search",
+        link="https://www.youtube.com/channel/" + args.channel,
+        language="en",
+    )
+    generate_video_rss(videos, fg, args.output, args.timezone)
+else:
+    print(videos)
