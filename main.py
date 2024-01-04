@@ -47,6 +47,9 @@ if args.output:
         link="https://www.youtube.com/channel/" + args.channel,
         language="en",
     )
-    generate_video_rss(videos, fg, args.output, args.timezone)
+    if args.timezone:
+        generate_video_rss(videos, fg, args.output, args.timezone)
+    else:
+        generate_video_rss(videos, fg, args.output)
 else:
     print(videos)

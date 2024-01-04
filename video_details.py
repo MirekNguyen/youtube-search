@@ -29,7 +29,7 @@ def video_info(videos):
                 "id": video["id"],
                 "description": video["snippet"]["description"],
                 "liveBroadcastContent": video["snippet"]["liveBroadcastContent"]
-                == "live",
+                != "none",
                 "duration": parse_duration(
                     video["contentDetails"]["duration"]
                 ).total_seconds(),
