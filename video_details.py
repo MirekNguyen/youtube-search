@@ -26,6 +26,10 @@ def video_info(videos):
         map(
             lambda video: {
                 "title": video["snippet"]["title"],
+                "id": video["id"],
+                "description": video["snippet"]["description"],
+                "liveBroadcastContent": video["snippet"]["liveBroadcastContent"]
+                == "live",
                 "duration": parse_duration(
                     video["contentDetails"]["duration"]
                 ).total_seconds(),
@@ -49,8 +53,7 @@ def is_short(duration):
 
 def print_video_details(videos):
     """This function is used to print the details of the videos."""
-    video_list = video_info(videos)
-    for video in video_list:
+    for video in videos:
         print(
             f"{video['title']}-{video['duration']}-{video['is_short']}-{video['published_at']}"
         )
