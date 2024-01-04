@@ -25,7 +25,7 @@ if not args.channel:
     sys.exit(1)
 
 load_dotenv()
-api_key = os.getenv("YOUTUBE_DATA_API_KEY")
+api_key = os.environ.get("YOUTUBE_DATA_API_KEY", os.getenv("YOUTUBE_DATA_API_KEY"))
 search_results = search_videos(args.channel, api_key, args.results)
 if search_results.get("error"):
     print(search_results["error"]["message"])
