@@ -19,7 +19,7 @@ def generate_video_rss(videos, fg, file, timezone="Etc/UTC"):
     videos = sorted(videos, key=lambda video: video["published_at"])
     timezone = pytz.timezone(timezone)
     for video in videos:
-        if video["liveBroadcastContent"] or video["is_short"]:
+        if video["livestream"] or video["is_short"]:
             continue
         link = "https://www.youtube.com/watch?v=" + video["id"]
         fe = fg.add_entry()

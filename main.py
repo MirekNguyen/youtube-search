@@ -52,4 +52,5 @@ if args.output:
     else:
         generate_video_rss(videos, fg, args.output)
 else:
+    # print()
     print(videos)

@@ -10,7 +10,7 @@ VIDEO_DETAILS_URL = "https://www.googleapis.com/youtube/v3/videos?"
 def video_details(video_ids, api_key):
     """This function is used to get the details of the videos."""
     video_params = {
-        "part": "snippet,contentDetails",
+        "part": "snippet,contentDetails,liveStreamingDetails",
         "id": ",".join(video_ids),
         "key": api_key,
     }
@@ -28,8 +28,7 @@ def video_info(videos):
                 "title": video["snippet"]["title"],
                 "id": video["id"],
                 "description": video["snippet"]["description"],
-                "liveBroadcastContent": video["snippet"]["liveBroadcastContent"]
-                != "none",
+                "livestream": video.get('liveStreamingDetails') is not None,
                 "duration": parse_duration(
                     video["contentDetails"]["duration"]
                 ).total_seconds(),
