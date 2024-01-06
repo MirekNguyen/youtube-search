@@ -9,6 +9,13 @@ import search_videos
 from feed_generator import generate_fg, generate_video_rss
 from search_videos import search_videos, search_playlist_videos
 from video_details import video_details, video_info
+from playlist import get_playlist_id
+
+def handle_error(error):
+    """Handle errors"""
+    if error:
+        print(error)
+        sys.exit(1)
 
 parser = argparse.ArgumentParser(description="Youtube Search")
 parser.add_argument("-c", "--channel", action="store", help="Channel ID (required)")
@@ -18,22 +25,27 @@ parser.add_argument(
 parser.add_argument("-o", "--output", action="store", help="Generate RSS feed")
 parser.add_argument("-t", "--timezone", action="store", help="Timezone")
 parser.add_argument("-p", "--playlist", action="store", help="Playlist ID")
+parser.add_argument("--get-playlist", action="store", help="Get playlist ID from channel ID")
 
 args = parser.parse_args()
 
+load_dotenv()
+api_key = os.environ.get("YOUTUBE_DATA_API_KEY", os.getenv("YOUTUBE_DATA_API_KEY"))
 
-def handle_error(error):
-    """Handle errors"""
-    if error:
-        print(error)
+if args.get_playlist:
+    response = get_playlist_id(args.get_playlist, api_key)
+    if response.status_code == 200:
+        print("Channel ID is valid")
         sys.exit(1)
+    data = response.json()
+    uploads_playlist_id = data['items'][0]['contentDetails']['relatedPlaylists']['uploads']
+    print(f'The playlist ID for the channel uploads is: {uploads_playlist_id}')
+    sys.exit(0)
 
 if not args.channel and not args.playlist:
     print("Please specify a channel or playlist ID")
     sys.exit(1)
 
-load_dotenv()
-api_key = os.environ.get("YOUTUBE_DATA_API_KEY", os.getenv("YOUTUBE_DATA_API_KEY"))
 if args.playlist:
     search_results = search_playlist_videos(args.playlist, api_key, args.results)
     handle_error(search_results.get("error"))
