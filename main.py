@@ -34,7 +34,7 @@ api_key = os.environ.get("YOUTUBE_DATA_API_KEY", os.getenv("YOUTUBE_DATA_API_KEY
 
 if args.get_playlist:
     response = get_playlist_id(args.get_playlist, api_key)
-    if response.status_code == 200:
+    if response.status_code != 200:
         print("Channel ID is valid")
         sys.exit(1)
     data = response.json()
