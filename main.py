@@ -10,6 +10,7 @@ from youtube_search.search_videos import search_videos, search_playlist_videos
 from youtube_search.video_details import video_details, video_info
 from youtube_search.playlist import get_playlist_id
 from youtube_search.search_videos import search_videos
+from youtube_search.settings import Settings
 
 def handle_error(error):
     """Handle errors"""
@@ -17,26 +18,17 @@ def handle_error(error):
         print(error)
         sys.exit(1)
 
-parser = argparse.ArgumentParser(description="Youtube Search")
-parser.add_argument("-c", "--channel", action="store", help="Channel ID (required)")
-parser.add_argument(
-    "-r", "--results", action="store", help="Number of results", default=1
-)
-parser.add_argument("-o", "--output", action="store", help="Generate RSS feed")
-parser.add_argument("-t", "--timezone", action="store", help="Timezone")
-parser.add_argument("-p", "--playlist", action="store", help="Playlist ID")
-parser.add_argument("--get-playlist", action="store", help="Get playlist ID from channel ID")
+settings = Settings()
+settings.parse_args()
+settings.load_env()
+print(settings.env["api_key"])
 
-args = parser.parse_args()
-
-load_dotenv()
-api_key = os.environ.get("YOUTUBE_DATA_API_KEY", os.getenv("YOUTUBE_DATA_API_KEY"))
-if not api_key:
+if not settings.env["api_key"]:
     print("Invalid or non-existent Youtube API key")
     sys.exit(1)
 
-if args.get_playlist:
-    response = get_playlist_id(args.get_playlist, api_key)
+if settings.args.get_playlist:
+    response = get_playlist_id(settings.args.get_playlist, settings.env["api_key"])
     if response.status_code != 200:
         print(response.json().message)
         sys.exit(1)
@@ -45,35 +37,35 @@ if args.get_playlist:
     print(f'The playlist ID for the channel uploads is: {uploads_playlist_id}')
     sys.exit(0)
 
-if not args.channel and not args.playlist:
+if not settings.args.channel and not settings.args.playlist:
     print("Please specify a channel or playlist ID")
     sys.exit(1)
 
-if args.playlist:
-    search_results = search_playlist_videos(args.playlist, api_key, args.results)
+if settings.args.playlist:
+    search_results = search_playlist_videos(settings.args.playlist, settings.env["api_key"], settings.args.results)
     handle_error(search_results.get("error"))
     video_ids = [video["contentDetails"]["videoId"] for video in search_results.get("items", [])]
 else:
-    search_results = search_videos(args.channel, api_key, args.results)
+    search_results = search_videos(settings.args.channel, settings.env["api_key"], settings.args.results)
     handle_error(search_results.get("error"))
     video_ids = [video["id"]["videoId"] for video in search_results.get("items", [])]
 
-videos = video_details(video_ids, api_key)
+videos = video_details(video_ids, settings.env["api_key"])
 handle_error(videos.get("error"))
 
 videos = video_info(videos)
 
-if args.output:
+if settings.args.output:
     fg = generate_fg(
-        feed_id="https://www.youtube.com/channel/" + args.channel,
+        feed_id="https://www.youtube.com/channel/" + settings.args.channel,
         title="Youtube Search",
         subtitle="Youtube Search",
-        link="https://www.youtube.com/channel/" + args.channel,
+        link="https://www.youtube.com/channel/" + settings.args.channel,
         language="en",
     )
-    if args.timezone:
-        generate_video_rss(videos, fg, args.output, args.timezone)
+    if settings.args.timezone:
+        generate_video_rss(videos, fg, settings.args.output, settings.args.timezone)
     else:
-        generate_video_rss(videos, fg, args.output)
+        generate_video_rss(videos, fg, settings.args.output)
 else:
     print(videos)
