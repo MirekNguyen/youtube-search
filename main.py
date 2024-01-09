@@ -5,11 +5,11 @@ import sys
 
 from dotenv import load_dotenv
 
-import search_videos
-from feed_generator import generate_fg, generate_video_rss
-from search_videos import search_videos, search_playlist_videos
-from video_details import video_details, video_info
-from playlist import get_playlist_id
+from youtube_search.feed_generator import generate_fg, generate_video_rss
+from youtube_search.search_videos import search_videos, search_playlist_videos
+from youtube_search.video_details import video_details, video_info
+from youtube_search.playlist import get_playlist_id
+from youtube_search.search_videos import search_videos
 
 def handle_error(error):
     """Handle errors"""
@@ -31,11 +31,14 @@ args = parser.parse_args()
 
 load_dotenv()
 api_key = os.environ.get("YOUTUBE_DATA_API_KEY", os.getenv("YOUTUBE_DATA_API_KEY"))
+if not api_key:
+    print("Invalid or non-existent Youtube API key")
+    sys.exit(1)
 
 if args.get_playlist:
     response = get_playlist_id(args.get_playlist, api_key)
     if response.status_code != 200:
-        print("Channel ID is valid")
+        print(response.json().message)
         sys.exit(1)
     data = response.json()
     uploads_playlist_id = data['items'][0]['contentDetails']['relatedPlaylists']['uploads']
