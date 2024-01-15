@@ -53,7 +53,7 @@ def video_info(videos):
 
 def is_short(duration):
     """This function is used to check if the video is short."""
-    return duration <= 60
+    return duration <= 61
 
 
 def print_video_details(videos):
