@@ -14,8 +14,10 @@ def video_details(video_ids, api_key):
         "id": ",".join(video_ids),
         "key": api_key,
     }
-    video_response = requests.get(VIDEO_DETAILS_URL, params=video_params, timeout=5)
-    videos = video_response.json()
+    response = requests.get(VIDEO_DETAILS_URL, params=video_params, timeout=5)
+    if response.status_code != 200:
+        raise Exception(f"Error throwed by the API ({response.status_code}): {response.json()['error']['message']}")
+    videos = response.json()
     return videos
 
 

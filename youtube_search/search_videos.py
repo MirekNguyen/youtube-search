@@ -15,6 +15,8 @@ def search_videos(channel_id, api_key, max_results = 1):
         "key": api_key,
     }
     response = requests.get(BASE_VIDEO_URL, params=params, timeout=5)
+    if response.status_code != 200:
+        raise Exception(f"Error throwed by the API ({response.status_code}): {response.json()['error']['message']}")
     return response.json()
 
 def search_playlist_videos(playlist_id, api_key, max_results = 1):
@@ -26,4 +28,6 @@ def search_playlist_videos(playlist_id, api_key, max_results = 1):
         'key': api_key
     }
     response = requests.get(BASE_VIDEO_PLAYLIST_URL, params=params, timeout=5)
+    if response.status_code != 200:
+        raise Exception(f"Error throwed by the API ({response.status_code}): {response.json()['error']['message']}")
     return response.json()
