@@ -22,6 +22,7 @@ class Settings:
         parser.add_argument("-o", "--output", action="store", help="Generate RSS feed")
         parser.add_argument("-t", "--timezone", action="store", help="Timezone")
         parser.add_argument("-p", "--playlist", action="store", help="Playlist ID")
+        parser.add_argument("--get-channel", action="store", help="Get channel info")
         parser.add_argument(
             "--get-playlist", action="store", help="Get playlist ID from channel ID"
         )

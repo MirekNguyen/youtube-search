@@ -1,12 +1,14 @@
 """Main controller for Youtube search"""
 
 from youtube_search.feed_generator import generate_fg, generate_video_rss
-from youtube_search.playlist import get_playlist_id
+from youtube_search.playlist import get_playlist_id, get_url_info
 from youtube_search.search_videos import search_playlist_videos, search_videos
 from youtube_search.video_details import video_details, video_info
 
+
 class MainController:
     """Main controller for Youtube search"""
+
     def get_playlist(self, settings) -> None:
         """Get the playlist ID for a channel's uploads"""
         response = get_playlist_id(settings.args.get_playlist, settings.env["api_key"])
@@ -16,9 +18,24 @@ class MainController:
         ]
         print(f"The playlist ID for the channel uploads is: {uploads_playlist_id}")
 
+    def get_channel(self, settings) -> None:
+        response = get_url_info(settings.args.get_channel, settings.env["api_key"])
+        data = response.json()
+        channels = []
+        for item in data["items"]:
+            channel = {
+                "title": item["snippet"]["title"],
+                "channel_id": item["snippet"]["channelId"],
+                "playlist_id": get_playlist_id(
+                    item["snippet"]["channelId"], settings.env["api_key"]
+                ).json()["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"],
+            }
+            channels.append(channel)
+        print(channels)
+
     def get_videos(self, settings):
         """Get the videos for a channel or playlist"""
-        if settings.args.get_playlist != None:
+        if settings.args.playlist is not None:
             search_results = search_playlist_videos(
                 settings.args.playlist, settings.env["api_key"], settings.args.results
             )

@@ -4,6 +4,8 @@ from datetime import datetime
 import requests
 from isodate import parse_duration
 
+from youtube_search.yt_api_exception import YoutubeAPIError
+
 VIDEO_DETAILS_URL = "https://www.googleapis.com/youtube/v3/videos?"
 
 
@@ -18,7 +20,7 @@ def video_details(video_ids, api_key):
     if response.status_code != 200:
         error_message = response.json()["error"]["message"]
         status_code = response.status_code
-        raise Exception(f"Error throwed by the API ({status_code}): {error_message}")
+        raise YoutubeAPIError(f"Error throwed by the API ({status_code}): {error_message}")
     videos = response.json()
     return videos
 
