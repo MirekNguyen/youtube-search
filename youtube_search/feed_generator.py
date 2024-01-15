@@ -16,7 +16,7 @@ def generate_fg(feed_id, title, subtitle, link, language="en"):
 
 def generate_video_rss(videos, fg, file, timezone=None):
     """This function is used to generate the RSS feed."""
-    timezone = timezone if timezone != None else "Etc/UTC"
+    timezone = timezone if timezone is not None else "Etc/UTC"
     videos = sorted(videos, key=lambda video: video["published_at"])
     timezone = pytz.timezone(timezone)
     for video in videos:

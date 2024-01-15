@@ -16,7 +16,9 @@ def video_details(video_ids, api_key):
     }
     response = requests.get(VIDEO_DETAILS_URL, params=video_params, timeout=5)
     if response.status_code != 200:
-        raise Exception(f"Error throwed by the API ({response.status_code}): {response.json()['error']['message']}")
+        error_message = response.json()["error"]["message"]
+        status_code = response.status_code
+        raise Exception(f"Error throwed by the API ({status_code}): {error_message}")
     videos = response.json()
     return videos
 
@@ -30,7 +32,7 @@ def video_info(videos):
                 "title": video["snippet"]["title"],
                 "id": video["id"],
                 "description": video["snippet"]["description"],
-                "livestream": video.get('liveStreamingDetails') is not None,
+                "livestream": video.get("liveStreamingDetails") is not None,
                 "duration": parse_duration(
                     video["contentDetails"]["duration"]
                 ).total_seconds(),
