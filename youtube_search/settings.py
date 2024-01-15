@@ -2,12 +2,16 @@
 
 import argparse
 import os
-
 from dotenv import load_dotenv
 
 
 class Settings:
-    def parse_args(self) -> bool:
+    """Settings for youtube_search"""
+    def __init__(self) -> None:
+        self.args = self.parse_args()
+        self.env = self.load_env()
+    def parse_args(self):
+        """Parse arguments"""
         parser = argparse.ArgumentParser(description="Youtube Search")
         parser.add_argument(
             "-c", "--channel", action="store", help="Channel ID (required)"
@@ -21,15 +25,14 @@ class Settings:
         parser.add_argument(
             "--get-playlist", action="store", help="Get playlist ID from channel ID"
         )
-        self.args = parser.parse_args()
-        return True
+        args = parser.parse_args()
+        return args
 
-    def load_env(self) -> bool:
+    def load_env(self):
+        """Load environment variables"""
         load_dotenv()
         api_key = os.environ.get(
             "YOUTUBE_DATA_API_KEY", os.getenv("YOUTUBE_DATA_API_KEY")
         )
-        self.env = {
-            "api_key": api_key
-        }
-        return True
+        env = {"api_key": api_key}
+        return env
