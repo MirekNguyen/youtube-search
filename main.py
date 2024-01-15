@@ -11,6 +11,9 @@ try:
     if not settings.env["api_key"]:
         raise EnvironmentError("Invalid or non-existent Youtube API key")
 
+    if settings.args.get_channel:
+        controller.get_channel(settings)
+        sys.exit(0)
     if settings.args.get_playlist:
         controller.get_playlist(settings)
         sys.exit(0)
@@ -23,6 +26,7 @@ try:
         controller.generate_rss(settings, videos)
     else:
         print(videos)
+
 except (EnvironmentError, YoutubeAPIError) as e:
     print(e)
     sys.exit(1)
