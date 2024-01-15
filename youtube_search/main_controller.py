@@ -19,6 +19,7 @@ class MainController:
         print(f"The playlist ID for the channel uploads is: {uploads_playlist_id}")
 
     def get_channel(self, settings) -> None:
+        """Get channel info"""
         response = get_url_info(settings.args.get_channel, settings.env["api_key"])
         data = response.json()
         channels = []
