@@ -1,6 +1,8 @@
 """Get the playlist id of a channel"""
 import requests
 
+from youtube_search.yt_api_exception import YoutubeAPIError
+
 CHANNEL_URL = "https://www.googleapis.com/youtube/v3/channels"
 
 
@@ -11,7 +13,7 @@ def get_playlist_id(channel_id, api_key):
     if response.status_code != 200:
         error_message = response.json()["error"]['message']
         status_code = response.status_code
-        raise Exception(
+        raise YoutubeAPIError(
             f"Error throwed by the API ({status_code}): {error_message}"
         )
     return response

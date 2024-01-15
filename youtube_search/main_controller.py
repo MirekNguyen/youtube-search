@@ -18,7 +18,7 @@ class MainController:
 
     def get_videos(self, settings):
         """Get the videos for a channel or playlist"""
-        if settings.args.get_playlist != None:
+        if settings.args.playlist is not None:
             search_results = search_playlist_videos(
                 settings.args.playlist, settings.env["api_key"], settings.args.results
             )
